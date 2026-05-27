@@ -1,0 +1,308 @@
+.trip-log {
+  max-width: 1100px;
+}
+
+/* ── Stats bar ────────────────────────────────────────────────── */
+.trip-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.trip-stat {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.trip-stat-val {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.trip-stat-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ── Trip table ───────────────────────────────────────────────── */
+.trip-route {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.route-arrow {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.trip-row-open td {
+  background: rgba(243,156,18,0.04);
+}
+
+.trip-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.empty-log {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ── Trip modal ───────────────────────────────────────────────── */
+.trip-modal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-mid);
+  border-radius: 8px;
+  width: 820px;
+  max-width: 96vw;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.55);
+}
+
+.trip-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Form sections ────────────────────────────────────────────── */
+.form-section {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.form-section:last-child {
+  border-bottom: none;
+}
+
+.form-section-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--navy-400);
+  margin-bottom: 10px;
+}
+
+.form-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.form-section-header .form-section-label {
+  margin-bottom: 0;
+}
+
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.form-row-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+
+/* ── Toggle ───────────────────────────────────────────────────── */
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px 10px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  margin-top: 0;
+}
+
+.toggle-label input { cursor: pointer; }
+
+.toggle-text {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* ── Crew manifest chips ──────────────────────────────────────── */
+.crew-manifest {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.crew-chip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.crew-chip.selected {
+  background: rgba(201,146,74,0.1);
+  border-color: var(--brass-500);
+}
+
+.crew-chip input { display: none; }
+
+.crew-chip-name {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.crew-chip.selected .crew-chip-name {
+  color: var(--brass-300);
+}
+
+.crew-chip-role {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+/* ── Scientific personnel ─────────────────────────────────────── */
+.sci-person-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.souls-counter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: var(--bg-raised);
+  border-radius: 4px;
+  border: 1px solid var(--border-subtle);
+}
+
+.souls-counter.over {
+  border-color: rgba(231,76,60,0.4);
+  background: rgba(231,76,60,0.06);
+}
+
+.souls-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.souls-value {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.souls-warn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--red-400);
+}
+
+/* ── Scientific ops chips ─────────────────────────────────────── */
+.sci-ops-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sci-op-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 3px;
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.sci-op-chip.selected {
+  background: rgba(42,157,143,0.12);
+  border-color: var(--teal-400);
+  color: var(--teal-300);
+}
+
+.sci-op-chip input { display: none; }
+
+/* ── Derived value display ────────────────────────────────────── */
+.derived-value {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  color: var(--brass-400);
+  letter-spacing: 0.04em;
+}
+
+/* ── Incident flag ────────────────────────────────────────────── */
+.incident-flag {
+  color: var(--red-400);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  margin-left: 8px;
+}
+
+/* ── Textarea ─────────────────────────────────────────────────── */
+.field-textarea {
+  resize: vertical;
+  min-height: 52px;
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+
+/* ── Empty hint ───────────────────────────────────────────────── */
+.empty-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 6px 0;
+}
