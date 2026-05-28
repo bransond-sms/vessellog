@@ -57,14 +57,7 @@ const NAV_ITEMS = [
   },
 ]
 
-// Simulated alert counts — will be driven by DB/state later
-const ALERT_COUNTS = {
-  dashboard: { red: 2, yellow: 1 },
-  compliance: { red: 2, yellow: 1 },
-  safety: { yellow: 1 },
-}
-
-export default function Shell({ currentPage, onNavigate, children }) {
+export default function Shell({ currentPage, onNavigate, children, alertCounts = {} }) {
   return (
     <div className="shell">
       <aside className="sidebar">
@@ -85,7 +78,7 @@ export default function Shell({ currentPage, onNavigate, children }) {
 
         <nav className="sidebar-nav">
           {NAV_ITEMS.map((item) => {
-            const alerts = ALERT_COUNTS[item.id]
+            const alerts = alertCounts[item.id]
             return (
               <div key={item.id}>
                 {item.section && (

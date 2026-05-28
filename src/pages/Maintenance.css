@@ -1,0 +1,478 @@
+.maint-page {
+  display: flex;
+  flex-direction: column;
+  max-width: 1100px;
+  height: calc(100vh - 44px - 56px - 56px);
+}
+
+.maint-page .page-header {
+  flex-shrink: 0;
+}
+
+/* ── Header chips ─────────────────────────────────────────────── */
+.maint-status-chips {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.maint-chip {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 5px;
+}
+
+.maint-chip.overdue {
+  background: rgba(231,76,60,0.1);
+  border: 1px solid rgba(231,76,60,0.3);
+}
+
+.maint-chip.warning {
+  background: rgba(243,156,18,0.1);
+  border: 1px solid rgba(243,156,18,0.3);
+}
+
+.maint-chip.ok {
+  background: rgba(46,204,113,0.06);
+  border: 1px solid rgba(46,204,113,0.25);
+}
+
+.maint-chip-num {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.maint-chip.overdue .maint-chip-num { color: var(--red-400); }
+.maint-chip.warning .maint-chip-num { color: var(--amber-400); }
+
+.maint-chip-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.maint-chip.overdue .maint-chip-label { color: var(--red-600); }
+.maint-chip.warning .maint-chip-label { color: var(--amber-500); }
+.maint-chip.ok      .maint-chip-label { color: var(--green-400); }
+
+/* ── Two-panel layout ──────────────────────────────────────────── */
+.maint-layout {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── System sidebar ───────────────────────────────────────────── */
+.maint-sidebar {
+  width: 172px;
+  min-width: 172px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.maint-sys-btn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.12s;
+}
+
+.maint-sys-btn:hover {
+  background: var(--bg-raised);
+  border-color: var(--border-mid);
+}
+
+.maint-sys-btn.active {
+  background: var(--bg-elevated);
+  border-color: var(--brass-500);
+}
+
+.maint-sys-icon {
+  font-size: 14px;
+  width: 16px;
+  text-align: center;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.maint-sys-label {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  flex: 1;
+  transition: color 0.12s;
+}
+
+.maint-sys-btn.active .maint-sys-label {
+  color: var(--text-primary);
+}
+
+.maint-sys-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.maint-sys-dot.ok          { background: var(--green-400); }
+.maint-sys-dot.warning     { background: var(--amber-400); }
+.maint-sys-dot.overdue     { background: var(--red-500); }
+.maint-sys-dot.acknowledged { background: var(--amber-500); }
+
+/* ── Content panel ────────────────────────────────────────────── */
+.maint-content {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+/* ── System panel ─────────────────────────────────────────────── */
+.maint-system-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.maint-system-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-raised);
+  flex-wrap: wrap;
+}
+
+.maint-system-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.maint-system-icon {
+  font-size: 20px;
+  color: var(--brass-400);
+}
+
+.maint-system-name {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+}
+
+.maint-system-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+}
+
+.maint-system-counts {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.maint-hours-chip {
+  font-size: 11px;
+  color: var(--teal-400);
+  background: rgba(58,181,166,0.08);
+  border: 1px solid rgba(58,181,166,0.2);
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+/* ── Task list ────────────────────────────────────────────────── */
+.maint-task-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.maint-task {
+  border-bottom: 1px solid rgba(46,82,153,0.12);
+}
+
+.maint-task:last-child {
+  border-bottom: none;
+}
+
+.maint-task.overdue .maint-task-row {
+  border-left: 3px solid var(--red-500);
+}
+
+.maint-task.warning .maint-task-row {
+  border-left: 3px solid var(--amber-400);
+}
+
+.maint-task.acknowledged .maint-task-row {
+  border-left: 3px solid var(--amber-500);
+}
+
+.maint-task.ok .maint-task-row {
+  border-left: 3px solid transparent;
+}
+
+.maint-task-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px 10px 13px;
+  cursor: pointer;
+  transition: background 0.1s;
+  flex-wrap: wrap;
+}
+
+.maint-task-row:hover {
+  background: var(--bg-raised);
+}
+
+.maint-task-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.maint-task-name {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.maint-task-due {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.maint-due-over { color: var(--red-400); }
+.maint-due-warn { color: var(--amber-400); }
+
+.maint-task-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.maint-task-last {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.maint-task-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.maint-btn {
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
+.maint-expand-arrow {
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
+/* ── Task detail (expanded) ───────────────────────────────────── */
+.maint-task-detail {
+  padding: 12px 16px 14px 16px;
+  background: var(--bg-raised);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.maint-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.maint-log-header {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.maint-log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.maint-log-entry {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(46,82,153,0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.maint-log-entry:last-child {
+  border-bottom: none;
+}
+
+.maint-log-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.maint-log-date {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--text-primary);
+}
+
+.maint-log-tag {
+  font-size: 10px;
+  color: var(--text-muted);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.maint-log-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.maint-log-parts {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+
+.maint-log-empty {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 4px 0;
+}
+
+/* ── Modal extras ─────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 13, 26, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-mid);
+  border-radius: 8px;
+  width: 520px;
+  max-width: 95vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: var(--text-primary);
+}
+
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+}
+
+.modal-grid .span-2 {
+  grid-column: 1 / -1;
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.maint-modal-task {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+}
+
+.maint-modal-system {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  margin-top: 3px;
+  margin-bottom: 4px;
+}

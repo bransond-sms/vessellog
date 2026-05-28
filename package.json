@@ -23,6 +23,12 @@
       "electron/**/*",
       "node_modules/**/*"
     ],
+    "extraResources": [
+      {
+        "from": "node_modules/sql.js/dist/sql-wasm.wasm",
+        "to": "sql-wasm.wasm"
+      }
+    ],
     "win": {
       "target": "nsis",
       "icon": "public/icon.ico"
@@ -33,10 +39,12 @@
     }
   },
   "dependencies": {
-    "sql.js": "^1.12.0",
     "dayjs": "^1.11.13",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "sql.js": "^1.12.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.8",

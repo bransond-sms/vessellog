@@ -71,4 +71,32 @@ contextBridge.exposeInMainWorld('vesselAPI', {
     update:    (data) => ipcRenderer.invoke('safetyLog:update', data),
     delete:    (id)   => ipcRenderer.invoke('safetyLog:delete', id),
   },
+
+  coiRegister: {
+    getAll:    ()     => ipcRenderer.invoke('coiRegister:getAll'),
+    logAction: (data) => ipcRenderer.invoke('coiRegister:logAction', data),
+  },
+
+  drills: {
+    getAll:  ()     => ipcRenderer.invoke('drills:getAll'),
+    save:    (data) => ipcRenderer.invoke('drills:save', data),
+    delete:  (id)   => ipcRenderer.invoke('drills:delete', id),
+  },
+
+  dashboard: {
+    getSummary: () => ipcRenderer.invoke('dashboard:getSummary'),
+  },
+
+  maintenance: {
+    getAll:      ()       => ipcRenderer.invoke('maintenance:getAll'),
+    logService:  (data)   => ipcRenderer.invoke('maintenance:logService', data),
+    acknowledge: (taskId) => ipcRenderer.invoke('maintenance:acknowledge', taskId),
+    deleteLog:   (logId)  => ipcRenderer.invoke('maintenance:deleteLog', logId),
+  },
+
+  reports: {
+    getAllData: ()     => ipcRenderer.invoke('reports:getAllData'),
+    savePdf:   (data) => ipcRenderer.invoke('reports:savePdf', data),
+    saveJson:  (data) => ipcRenderer.invoke('reports:saveJson', data),
+  },
 })

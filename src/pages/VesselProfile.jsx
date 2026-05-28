@@ -283,11 +283,6 @@ export default function VesselProfile() {
               </button>
             </div>
 
-            <div className="equip-note">
-              <span className="status-badge status-warn">NOTE</span>
-              <span>Verify PFD type against actual COI — spec lists Type I requirement; current inventory is foam Type II. Confirm with OCMI Sector Jacksonville before next inspection.</span>
-            </div>
-
             <div className="equip-table-wrap">
               <table className="data-table equip-table">
                 <thead>

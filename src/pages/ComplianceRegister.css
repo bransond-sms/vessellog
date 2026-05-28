@@ -1,0 +1,376 @@
+.cr-page {
+  display: flex;
+  flex-direction: column;
+  max-width: 1100px;
+  height: calc(100vh - 44px - 56px - 56px);
+}
+
+.cr-page .page-header {
+  flex-shrink: 0;
+}
+
+/* ── Tabs ─────────────────────────────────────────────────────── */
+.cr-tabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+.cr-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.cr-tab:hover { color: var(--text-secondary); }
+
+.cr-tab.active {
+  color: var(--text-accent);
+  border-bottom-color: var(--brass-500);
+}
+
+.cr-tab-badge {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.cr-tab-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.cr-tab-dot.red    { background: rgba(231,76,60,0.15);  color: var(--red-400); }
+.cr-tab-dot.yellow { background: rgba(243,156,18,0.12); color: var(--amber-400); }
+
+/* ── Content container ────────────────────────────────────────── */
+.cr-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* ── Filter bar ───────────────────────────────────────────────── */
+.cr-register {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cr-filter-bar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cr-filter-chip {
+  padding: 5px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.cr-filter-chip:hover { color: var(--text-secondary); border-color: var(--border-mid); }
+.cr-filter-chip.active { background: var(--bg-elevated); color: var(--text-primary); border-color: var(--border-mid); }
+.cr-filter-chip.chip-overdue.active { color: var(--red-400); border-color: rgba(231,76,60,0.4); background: rgba(231,76,60,0.08); }
+.cr-filter-chip.chip-warning.active { color: var(--amber-400); border-color: rgba(243,156,18,0.4); background: rgba(243,156,18,0.08); }
+.cr-filter-chip.chip-ok.active     { color: var(--green-400); border-color: rgba(46,204,113,0.4); background: rgba(46,204,113,0.06); }
+
+/* ── Register table ───────────────────────────────────────────── */
+.cr-table-wrap {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.cr-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cr-table th {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: left;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-raised);
+  white-space: nowrap;
+}
+
+.cr-category-row td {
+  padding: 5px 12px 4px;
+  background: var(--navy-800);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: var(--brass-400);
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.cr-item-row td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(46,82,153,0.12);
+  vertical-align: top;
+}
+
+.cr-item-row:last-child td {
+  border-bottom: none;
+}
+
+.cr-item-row:hover td {
+  background: var(--bg-raised);
+}
+
+.cr-name-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+.cr-item-note {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 3px;
+  font-style: italic;
+}
+
+.cr-cfr {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.cr-freq {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.cr-date {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.cr-due {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--text-muted);
+}
+
+.cr-due-over { color: var(--red-400); }
+.cr-due-warn { color: var(--amber-400); }
+
+.cr-action-btn {
+  font-size: 12px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.cr-empty {
+  padding: 40px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ── Log Action Modal extras ──────────────────────────────────── */
+.la-item-name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}
+
+.la-cfr {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.modal-grid .span-2 {
+  grid-column: 1 / -1;
+}
+
+/* ── Drill Log Tab ────────────────────────────────────────────── */
+.cr-drill-log {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.drill-log-note {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  padding: 10px 14px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  line-height: 1.5;
+}
+
+.drill-section {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.drill-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-raised);
+}
+
+.drill-section-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.drill-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+}
+
+.drill-next {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.drill-next-warn { color: var(--amber-400); }
+
+.drill-cfr {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  padding: 6px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--navy-800);
+}
+
+.drill-empty {
+  padding: 24px 16px;
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.drill-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.drill-record {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(46,82,153,0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.drill-record:last-child {
+  border-bottom: none;
+}
+
+.drill-record-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.drill-record-date {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--text-primary);
+}
+
+.drill-record-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.drill-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+
+.drill-record-field {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.drill-field-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding-top: 1px;
+  min-width: 90px;
+}
+
+.drill-ca .drill-field-label { color: var(--amber-500); }
+.drill-ca { color: var(--amber-300); }
+
+.drill-record-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}

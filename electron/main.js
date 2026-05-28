@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const path = require('path')
 const fs = require('fs')
 
@@ -54,6 +54,9 @@ function runMigrations() {
     { name: '007_crew_alter_columns',  fn: m007 },
     { name: '008_checklists',            fn: m008 },
     { name: '009_safety_log',             fn: m009 },
+    { name: '010_coi_register',           fn: m010 },
+    { name: '011_drills',                 fn: m011 },
+    { name: '012_maintenance',            fn: m012 },
   ]
 
   for (const m of migrations) {
@@ -279,6 +282,125 @@ function m009() { runMigration(`
   )
 `) }
 
+function m010() { runMigration(`
+  CREATE TABLE IF NOT EXISTS coi_register_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    category TEXT NOT NULL,
+    item_name TEXT NOT NULL,
+    cfr_reference TEXT,
+    frequency TEXT NOT NULL DEFAULT 'Annual',
+    last_action_date TEXT,
+    next_due_date TEXT,
+    notes TEXT,
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  INSERT OR IGNORE INTO coi_register_items
+    (id, category, item_name, cfr_reference, frequency, last_action_date, next_due_date, sort_order)
+  VALUES
+    (1,  'Life Saving Equipment', 'Life Raft — annual shore-side servicing (Revere HYF-K)',              '46 CFR 180.130',    'Annual',    NULL,         NULL,         10),
+    (2,  'Life Saving Equipment', 'EPIRB — annual battery and hydrostatic release inspection',            '46 CFR 180.64',     'Annual',    NULL,         NULL,         20),
+    (3,  'Life Saving Equipment', 'EPIRB — NOAA/FCC registration renewal',                               '47 CFR 80.1085',    'Biennial',  '2025-02-01', NULL,         30),
+    (4,  'Life Saving Equipment', 'Flare Kit — replace before expiry',                                   '46 CFR 180.68',     'PerExpiry', NULL,         '2026-06-30', 40),
+    (5,  'Life Saving Equipment', 'Life Jackets / PFDs — annual serviceability inspection',               '46 CFR 180.71',     'Annual',    '2026-04-01', NULL,         50),
+    (6,  'Fire Fighting',         'Fixed Engine Space Fire Suppression — annual inspection by certified technician', '46 CFR 181.410', 'Annual', NULL, NULL, 60),
+    (7,  'Fire Fighting',         'Portable Fire Extinguishers (3) — annual professional service',        '46 CFR 181.500',    'Annual',    '2026-04-01', NULL,         70),
+    (8,  'Navigation & Comms',    'FCC Ship Station License — obtain and post aboard',                    '46 CFR 184.502',    'OneTime',   NULL,         NULL,         80),
+    (9,  'Navigation & Comms',    'Magnetic Compass — deviation table current and posted',                '46 CFR 184.402',    'Annual',    '2026-04-01', NULL,         90),
+    (10, 'Navigation & Comms',    'Radar — operational check and log',                                   '46 CFR 184.404',    'Annual',    '2026-04-01', NULL,        100),
+    (11, 'Documentation',         'MARPOL Oil Pollution Placard — verify posted',                        '33 CFR 155.450',    'Annual',    '2026-04-01', NULL,        110),
+    (12, 'Documentation',         'MARPOL Garbage Placard — verify posted',                             '33 CFR 151.59',     'Annual',    '2026-04-01', NULL,        120),
+    (13, 'Documentation',         'Certificate of Inspection — verify current',                         '46 CFR 175.5',      'PerExpiry', NULL,         '2028-04-01', 130),
+    (14, 'Drills',                'Abandon Ship / Man Overboard Drill',                                 '46 CFR 185.506(a)', 'Quarterly', NULL,         NULL,        140),
+    (15, 'Drills',                'Firefighting Drill',                                                  '46 CFR 185.506(b)', 'Quarterly', NULL,         NULL,        150),
+    (16, 'Training',              'First Aid / CPR — all active crew current',                           '46 CFR 185.500',    'Biennial',  NULL,         NULL,        160),
+    (17, 'General Safety',        'General Alarm System — functional test and log',                      '46 CFR 183.550',    'Annual',    '2026-04-01', NULL,        170),
+    (18, 'General Safety',        'First Aid Kit — annual inventory and restock',                        '46 CFR 184.710',    'Annual',    '2026-04-01', NULL,        180),
+    (19, 'General Safety',        'AED — annual service (battery, pads, software update)',               'Institutional',     'Annual',    NULL,         NULL,        190),
+    (20, 'General Safety',        'Anchor System — annual inspection',                                   '46 CFR 184.300',    'Annual',    '2026-04-01', NULL,        200)
+`) }
+
+function m011() { runMigration(`
+  CREATE TABLE IF NOT EXISTS drills (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    drill_type TEXT NOT NULL,
+    drill_date TEXT NOT NULL,
+    conducted_by TEXT,
+    participants TEXT,
+    duration_minutes INTEGER,
+    location TEXT,
+    observations TEXT,
+    corrective_actions TEXT,
+    notes TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )
+`) }
+
+function m012() { runMigration(`
+  CREATE TABLE IF NOT EXISTS maintenance_tasks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    system TEXT NOT NULL,
+    task_name TEXT NOT NULL,
+    interval_type TEXT NOT NULL DEFAULT 'date',
+    interval_months INTEGER,
+    interval_hours REAL,
+    warn_days INTEGER,
+    warn_hours REAL,
+    last_service_date TEXT,
+    last_service_hours REAL,
+    next_due_date TEXT,
+    next_due_hours REAL,
+    acknowledged INTEGER NOT NULL DEFAULT 0,
+    acknowledged_at TEXT,
+    notes TEXT,
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE TABLE IF NOT EXISTS maintenance_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    task_id INTEGER NOT NULL REFERENCES maintenance_tasks(id) ON DELETE CASCADE,
+    service_date TEXT NOT NULL,
+    engine_hours REAL,
+    performed_by TEXT,
+    work_description TEXT,
+    parts_used TEXT,
+    cost REAL,
+    notes TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  INSERT OR IGNORE INTO maintenance_tasks
+    (id, system, task_name, interval_type, interval_months, interval_hours, warn_days, warn_hours, sort_order)
+  VALUES
+    (1,  'Main Engine', 'Engine Oil & Filter Change',           'hybrid',  12,   250,  30,  25,  10),
+    (2,  'Main Engine', 'Primary Fuel Filter',                  'hours',   NULL, 250,  NULL,25,  20),
+    (3,  'Main Engine', 'Racor Secondary Fuel Filter',          'hours',   NULL, 250,  NULL,25,  30),
+    (4,  'Main Engine', 'Raw Water Pump Impeller',              'hybrid',  12,   200,  30,  20,  40),
+    (5,  'Main Engine', 'Drive Belt Inspection & Replacement',  'hybrid',  24,   500,  45,  50,  50),
+    (6,  'Main Engine', 'Coolant System Service',               'date',    24,   NULL, 60,  NULL,60),
+    (7,  'Main Engine', 'Valve Clearance Check',                'hours',   NULL, 1000, NULL,100, 70),
+    (8,  'Main Engine', 'Engine Zincs (Pencil Anodes)',         'date',    3,    NULL, 14,  NULL,80),
+    (9,  'Generator',   'Generator Oil & Filter Change',        'hours',   NULL, 250,  NULL,25,  110),
+    (10, 'Generator',   'Generator Fuel Filter',                'hours',   NULL, 250,  NULL,25,  120),
+    (11, 'Generator',   'Generator Raw Water Impeller',         'hours',   NULL, 200,  NULL,20,  130),
+    (12, 'Generator',   'Generator Zincs (Pencil Anodes)',      'date',    3,    NULL, 14,  NULL,140),
+    (13, 'Hydraulics',  'Hydraulic Fluid Level Check',          'date',    3,    NULL, 14,  NULL,210),
+    (14, 'Hydraulics',  'Hydraulic Fluid Change',               'date',    24,   NULL, 60,  NULL,220),
+    (15, 'Hydraulics',  'Hose & Fitting Inspection',            'date',    12,   NULL, 45,  NULL,230),
+    (16, 'Bow Thruster','Thruster Oil Change',                  'date',    12,   NULL, 45,  NULL,310),
+    (17, 'Bow Thruster','Thruster Zinc Inspection',             'date',    3,    NULL, 14,  NULL,320),
+    (18, 'Stabilizers', 'Stabilizer System Service',            'date',    12,   NULL, 45,  NULL,410),
+    (19, 'Stabilizers', 'Stabilizer Zinc Inspection',           'date',    3,    NULL, 14,  NULL,420),
+    (20, 'General',     'Hull Zincs — Inspect',                 'date',    3,    NULL, 14,  NULL,510),
+    (21, 'General',     'Hull Zincs — Replace',                 'date',    12,   NULL, 45,  NULL,520),
+    (22, 'General',     'Shaft & Rudder Zincs Replace',         'date',    12,   NULL, 45,  NULL,530),
+    (23, 'General',     'Cutlass Bearing Inspection',           'date',    12,   NULL, 45,  NULL,540),
+    (24, 'General',     'Bilge Pumps — Annual Service',         'date',    12,   NULL, 45,  NULL,550),
+    (25, 'General',     'Seacocks — Lubricate & Exercise',      'date',    3,    NULL, 14,  NULL,560),
+    (26, 'General',     'Steering System Inspection',           'date',    12,   NULL, 45,  NULL,570),
+    (27, 'General',     'Battery Service',                      'date',    12,   NULL, 45,  NULL,580)
+`) }
+
 // ── Query helpers ──────────────────────────────────────────────
 function queryAll(sql, params = []) {
   const result = db.exec(sql, params)
@@ -289,6 +411,81 @@ function queryAll(sql, params = []) {
 
 function queryOne(sql, params = []) {
   return queryAll(sql, params)[0] ?? null
+}
+
+function computeItemStatus(item) {
+  if (item.frequency === 'OneTime') return item.last_action_date ? 'ok' : 'overdue'
+  const today = new Date(); today.setHours(0, 0, 0, 0)
+  let nextDue = null
+  if (item.frequency === 'PerExpiry') {
+    nextDue = item.next_due_date ? new Date(item.next_due_date) : null
+  } else if (item.last_action_date) {
+    const DAYS = { Monthly: 30, Quarterly: 90, Annual: 365, Biennial: 730 }
+    nextDue = new Date(item.last_action_date)
+    nextDue.setDate(nextDue.getDate() + (DAYS[item.frequency] || 365))
+  }
+  if (!nextDue) return 'overdue'
+  const WARN = { Monthly: 7, Quarterly: 21, Annual: 45, Biennial: 60, PerExpiry: 45 }
+  const daysUntil = Math.floor((nextDue - today) / 86400000)
+  if (daysUntil < 0) return 'overdue'
+  if (daysUntil <= (WARN[item.frequency] || 30)) return 'warning'
+  return 'ok'
+}
+
+function computeNextDue(item) {
+  if (item.frequency === 'OneTime') return null
+  if (item.frequency === 'PerExpiry') return item.next_due_date ?? null
+  if (!item.last_action_date) return null
+  const DAYS = { Monthly: 30, Quarterly: 90, Annual: 365, Biennial: 730 }
+  const d = new Date(item.last_action_date)
+  d.setDate(d.getDate() + (DAYS[item.frequency] || 365))
+  return d.toISOString().slice(0, 10)
+}
+
+function computeMaintenanceStatus(task, currentHours) {
+  if (task.acknowledged) return 'acknowledged'
+  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const statuses = []
+
+  if (task.interval_type === 'date' || task.interval_type === 'hybrid') {
+    if (!task.next_due_date) {
+      statuses.push('overdue')
+    } else {
+      const daysUntil = Math.floor((new Date(task.next_due_date + 'T00:00:00') - today) / 86400000)
+      if (daysUntil < 0) statuses.push('overdue')
+      else if (daysUntil <= (task.warn_days || 30)) statuses.push('warning')
+      else statuses.push('ok')
+    }
+  }
+
+  if (task.interval_type === 'hours' || task.interval_type === 'hybrid') {
+    if (!task.next_due_hours) {
+      statuses.push('overdue')
+    } else if (currentHours == null) {
+      statuses.push('ok')
+    } else {
+      const hoursUntil = task.next_due_hours - currentHours
+      if (hoursUntil < 0) statuses.push('overdue')
+      else if (hoursUntil <= (task.warn_hours || 25)) statuses.push('warning')
+      else statuses.push('ok')
+    }
+  }
+
+  if (!statuses.length) return 'ok'
+  if (statuses.includes('overdue')) return 'overdue'
+  if (statuses.includes('warning')) return 'warning'
+  return 'ok'
+}
+
+function getMaintenanceTasks() {
+  const currentHours = queryOne('SELECT MAX(engine_hours_end) as hours FROM trips')?.hours ?? null
+  const tasks = queryAll('SELECT * FROM maintenance_tasks ORDER BY sort_order')
+  return tasks.map(task => ({
+    ...task,
+    _status: computeMaintenanceStatus(task, currentHours),
+    _current_hours: currentHours,
+    _log: queryAll('SELECT * FROM maintenance_log WHERE task_id=? ORDER BY service_date DESC LIMIT 5', [task.id]),
+  }))
 }
 
 // ── IPC Handlers ───────────────────────────────────────────────
@@ -740,6 +937,240 @@ function registerIpcHandlers() {
     db.run('DELETE FROM safety_logs WHERE id=?', [id])
     saveDatabase()
     return { success: true }
+  })
+
+  // ── COI Register ──
+  ipcMain.handle('coiRegister:getAll', () => {
+    const items = queryAll('SELECT * FROM coi_register_items ORDER BY sort_order')
+    return items.map(item => ({
+      ...item,
+      _status: computeItemStatus(item),
+      _next_due: computeNextDue(item),
+    }))
+  })
+
+  ipcMain.handle('coiRegister:logAction', (_e, d) => {
+    db.run(`UPDATE coi_register_items SET
+      last_action_date=:last_action_date,
+      next_due_date=:next_due_date,
+      notes=:notes,
+      updated_at=datetime('now')
+      WHERE id=:id`, {
+      ':id': d.id,
+      ':last_action_date': d.last_action_date ?? null,
+      ':next_due_date': d.next_due_date ?? null,
+      ':notes': d.notes ?? null,
+    })
+    saveDatabase(); return { success: true }
+  })
+
+  // ── Drills ──
+  const DRILL_COI_IDS = { 'Abandon Ship / MOB': 14, 'Firefighting': 15 }
+
+  function syncDrillToCOI(drillType) {
+    const coiId = DRILL_COI_IDS[drillType]
+    if (!coiId) return
+    const latest = queryOne('SELECT MAX(drill_date) as max_date FROM drills WHERE drill_type=?', [drillType])
+    db.run(`UPDATE coi_register_items SET last_action_date=?, updated_at=datetime('now') WHERE id=?`,
+      [latest?.max_date ?? null, coiId])
+  }
+
+  ipcMain.handle('drills:getAll', () =>
+    queryAll('SELECT * FROM drills ORDER BY drill_date DESC, id DESC'))
+
+  ipcMain.handle('drills:save', (_e, d) => {
+    if (d.id) {
+      db.run(`UPDATE drills SET drill_type=:drill_type, drill_date=:drill_date,
+        conducted_by=:conducted_by, participants=:participants,
+        duration_minutes=:duration_minutes, location=:location,
+        observations=:observations, corrective_actions=:corrective_actions,
+        notes=:notes, updated_at=datetime('now') WHERE id=:id`, {
+        ':id': d.id, ':drill_type': d.drill_type, ':drill_date': d.drill_date,
+        ':conducted_by': d.conducted_by ?? null, ':participants': d.participants ?? null,
+        ':duration_minutes': d.duration_minutes ?? null, ':location': d.location ?? null,
+        ':observations': d.observations ?? null, ':corrective_actions': d.corrective_actions ?? null,
+        ':notes': d.notes ?? null,
+      })
+    } else {
+      db.run(`INSERT INTO drills
+        (drill_type, drill_date, conducted_by, participants,
+         duration_minutes, location, observations, corrective_actions, notes)
+        VALUES (:drill_type, :drill_date, :conducted_by, :participants,
+         :duration_minutes, :location, :observations, :corrective_actions, :notes)`, {
+        ':drill_type': d.drill_type, ':drill_date': d.drill_date,
+        ':conducted_by': d.conducted_by ?? null, ':participants': d.participants ?? null,
+        ':duration_minutes': d.duration_minutes ?? null, ':location': d.location ?? null,
+        ':observations': d.observations ?? null, ':corrective_actions': d.corrective_actions ?? null,
+        ':notes': d.notes ?? null,
+      })
+    }
+    syncDrillToCOI(d.drill_type)
+    saveDatabase(); return { success: true }
+  })
+
+  ipcMain.handle('drills:delete', (_e, id) => {
+    const drill = queryOne('SELECT drill_type FROM drills WHERE id=?', [id])
+    db.run('DELETE FROM drills WHERE id=?', [id])
+    if (drill) syncDrillToCOI(drill.drill_type)
+    saveDatabase(); return { success: true }
+  })
+
+  // ── Dashboard Summary ──
+  ipcMain.handle('dashboard:getSummary', () => {
+    const coiItems = queryAll('SELECT * FROM coi_register_items ORDER BY sort_order')
+      .map(item => ({ ...item, _status: computeItemStatus(item), _next_due: computeNextDue(item) }))
+    const recentTrips = queryAll(`SELECT t.id, t.trip_date, t.status, t.operating_area,
+      c.full_name as captain_name FROM trips t
+      LEFT JOIN crew_members c ON t.captain_id=c.id ORDER BY t.trip_date DESC LIMIT 5`)
+    const latestSafetyLog = queryOne('SELECT * FROM safety_logs ORDER BY log_month DESC LIMIT 1')
+    const recentDrills = queryAll('SELECT * FROM drills ORDER BY drill_date DESC LIMIT 3')
+    const vesselProfile = queryOne('SELECT * FROM vessel_profile WHERE id=1')
+    const tripCount = queryOne('SELECT COUNT(*) as n FROM trips')?.n ?? 0
+    const safetyLogCount = queryOne('SELECT COUNT(*) as n FROM safety_logs')?.n ?? 0
+    const checklistCount = queryOne('SELECT COUNT(*) as n FROM checklists')?.n ?? 0
+    const crewCount = queryOne("SELECT COUNT(*) as n FROM crew_members WHERE status='Active'")?.n ?? 0
+    const maintTasks = getMaintenanceTasks()
+    const maintenanceOverdue = maintTasks.filter(t => t._status === 'overdue').length
+    const maintenanceWarning = maintTasks.filter(t => t._status === 'warning').length
+    const maintenanceOk = maintTasks.filter(t => t._status === 'ok' || t._status === 'acknowledged').length
+    return { coiItems, recentTrips, latestSafetyLog, recentDrills, vesselProfile,
+             tripCount, safetyLogCount, checklistCount, crewCount,
+             maintenanceOverdue, maintenanceWarning, maintenanceOk }
+  })
+  // ── Maintenance ──
+  ipcMain.handle('maintenance:getAll', () => getMaintenanceTasks())
+
+  ipcMain.handle('maintenance:logService', (_e, d) => {
+    const task = queryOne('SELECT * FROM maintenance_tasks WHERE id=?', [d.task_id])
+    if (!task) return { success: false }
+
+    db.run(`INSERT INTO maintenance_log
+      (task_id, service_date, engine_hours, performed_by, work_description, parts_used, cost, notes)
+      VALUES (?,?,?,?,?,?,?,?)`, [
+      d.task_id, d.service_date,
+      d.engine_hours ?? null, d.performed_by ?? null,
+      d.work_description ?? null, d.parts_used ?? null,
+      d.cost ?? null, d.notes ?? null,
+    ])
+
+    let next_due_date = null
+    if (task.interval_months && d.service_date) {
+      const nd = new Date(d.service_date + 'T00:00:00')
+      nd.setMonth(nd.getMonth() + task.interval_months)
+      next_due_date = nd.toISOString().slice(0, 10)
+    }
+    let next_due_hours = null
+    if (task.interval_hours && d.engine_hours != null) {
+      next_due_hours = d.engine_hours + task.interval_hours
+    }
+
+    db.run(`UPDATE maintenance_tasks SET
+      last_service_date=:last_service_date, last_service_hours=:last_service_hours,
+      next_due_date=:next_due_date, next_due_hours=:next_due_hours,
+      acknowledged=0, acknowledged_at=NULL, updated_at=datetime('now')
+      WHERE id=:id`, {
+      ':id': d.task_id,
+      ':last_service_date': d.service_date,
+      ':last_service_hours': d.engine_hours ?? null,
+      ':next_due_date': next_due_date,
+      ':next_due_hours': next_due_hours,
+    })
+    saveDatabase(); return { success: true }
+  })
+
+  ipcMain.handle('maintenance:acknowledge', (_e, taskId) => {
+    db.run(`UPDATE maintenance_tasks SET acknowledged=1, acknowledged_at=datetime('now'),
+      updated_at=datetime('now') WHERE id=?`, [taskId])
+    saveDatabase(); return { success: true }
+  })
+
+  ipcMain.handle('maintenance:deleteLog', (_e, logId) => {
+    const entry = queryOne('SELECT task_id FROM maintenance_log WHERE id=?', [logId])
+    db.run('DELETE FROM maintenance_log WHERE id=?', [logId])
+    if (entry) {
+      const latest = queryOne(
+        'SELECT * FROM maintenance_log WHERE task_id=? ORDER BY service_date DESC LIMIT 1',
+        [entry.task_id])
+      const task = queryOne('SELECT * FROM maintenance_tasks WHERE id=?', [entry.task_id])
+      if (latest && task) {
+        let next_due_date = null
+        if (task.interval_months) {
+          const nd = new Date(latest.service_date + 'T00:00:00')
+          nd.setMonth(nd.getMonth() + task.interval_months)
+          next_due_date = nd.toISOString().slice(0, 10)
+        }
+        let next_due_hours = null
+        if (task.interval_hours && latest.engine_hours != null) {
+          next_due_hours = latest.engine_hours + task.interval_hours
+        }
+        db.run(`UPDATE maintenance_tasks SET
+          last_service_date=?, last_service_hours=?,
+          next_due_date=?, next_due_hours=?, updated_at=datetime('now') WHERE id=?`,
+          [latest.service_date, latest.engine_hours ?? null, next_due_date, next_due_hours, entry.task_id])
+      } else if (task) {
+        db.run(`UPDATE maintenance_tasks SET
+          last_service_date=NULL, last_service_hours=NULL,
+          next_due_date=NULL, next_due_hours=NULL, updated_at=datetime('now') WHERE id=?`,
+          [entry.task_id])
+      }
+    }
+    saveDatabase(); return { success: true }
+  })
+
+  // ── Reports ──
+  ipcMain.handle('reports:savePdf', async (_e, { filename, data }) => {
+    const { filePath } = await dialog.showSaveDialog({
+      defaultPath: filename,
+      filters: [{ name: 'PDF Files', extensions: ['pdf'] }],
+    })
+    if (!filePath) return { success: false, cancelled: true }
+    fs.writeFileSync(filePath, Buffer.from(data))
+    return { success: true, filePath }
+  })
+
+  ipcMain.handle('reports:saveJson', async (_e, { filename, data }) => {
+    const { filePath } = await dialog.showSaveDialog({
+      defaultPath: filename,
+      filters: [{ name: 'JSON Files', extensions: ['json'] }],
+    })
+    if (!filePath) return { success: false, cancelled: true }
+    fs.writeFileSync(filePath, data, 'utf8')
+    return { success: true, filePath }
+  })
+
+  ipcMain.handle('reports:getAllData', () => {
+    const currentHours = queryOne('SELECT MAX(engine_hours_end) as hours FROM trips')?.hours ?? null
+    const maintTasks = getMaintenanceTasks()
+    const allTrips = queryAll(`SELECT t.*, c.full_name as captain_name FROM trips t
+      LEFT JOIN crew_members c ON t.captain_id=c.id ORDER BY t.trip_date DESC`)
+    return {
+      vessel: queryOne('SELECT * FROM vessel_profile WHERE id=1'),
+      crew: queryAll(`SELECT * FROM crew_members ORDER BY
+        CASE role WHEN 'Captain' THEN 0 WHEN 'Mate' THEN 1 ELSE 2 END, full_name`),
+      credentials: queryAll(`SELECT cc.*, cm.full_name as crew_name FROM crew_credentials cc
+        JOIN crew_members cm ON cc.crew_id=cm.id ORDER BY cm.full_name, cc.credential_type`),
+      training: queryAll(`SELECT tr.*, tt.name as type_name, cm.full_name as crew_name
+        FROM training_records tr
+        LEFT JOIN training_types tt ON tr.training_type_id=tt.id
+        LEFT JOIN crew_members cm ON tr.crew_id=cm.id
+        ORDER BY tr.completion_date DESC`),
+      trips: allTrips,
+      tripCrew: queryAll(`SELECT tc.trip_id, cm.full_name, cm.preferred_name, cm.role, cm.id as crew_id
+        FROM trip_crew tc JOIN crew_members cm ON tc.crew_id=cm.id`),
+      tripScientific: queryAll('SELECT * FROM trip_scientific_personnel ORDER BY trip_id'),
+      safetyLogs: queryAll('SELECT * FROM safety_logs ORDER BY log_month DESC'),
+      safetyLogItems: queryAll('SELECT * FROM safety_log_items ORDER BY log_id, sort_order'),
+      coiItems: queryAll('SELECT * FROM coi_register_items ORDER BY sort_order').map(item => ({
+        ...item,
+        _status: computeItemStatus(item),
+        _next_due: computeNextDue(item),
+      })),
+      drills: queryAll('SELECT * FROM drills ORDER BY drill_date DESC'),
+      maintenance: maintTasks,
+      maintenanceLogs: queryAll('SELECT * FROM maintenance_log ORDER BY task_id, service_date DESC'),
+      currentEngineHours: currentHours,
+      generatedAt: new Date().toISOString(),
+    }
   })
 }
 
